@@ -1031,6 +1031,16 @@ function triggerGoal(scoringTeam) {
     document.getElementById('goal-text').style.color = 'var(--color-accent)';
   }
 
+  // Handle Panajotti 6:1 message
+  const subtextEl = document.getElementById('goal-subtext');
+  if (scorePlayer === 6 && scoreBot === 1) {
+    subtextEl.textContent = 'Gleichstand mit Panajotti - dem bisherigen Torschützenkönig 👑⚽';
+    subtextEl.style.display = 'block';
+  } else {
+    subtextEl.textContent = '';
+    subtextEl.style.display = 'none';
+  }
+
   // Show goal overlay
   const goalOverlay = document.getElementById('goal-overlay');
   goalOverlay.classList.add('active');
