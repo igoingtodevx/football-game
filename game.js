@@ -1022,12 +1022,12 @@ function triggerGoal(scoringTeam) {
   if (scoringTeam === 'player') {
     scorePlayer++;
     document.getElementById('player-score').textContent = scorePlayer;
-    document.getElementById('goal-text').textContent = '🇩🇪 GOOOOAL! 🇩🇪';
+    document.getElementById('goal-text').textContent = '🇩🇪 GOOOOL! 🇩🇪';
     document.getElementById('goal-text').style.color = 'var(--color-primary)';
   } else {
     scoreBot++;
     document.getElementById('bot-score').textContent = scoreBot;
-    document.getElementById('goal-text').textContent = '🇧🇷 GOAL FOR BOT 🇧🇷';
+    document.getElementById('goal-text').textContent = '🇧🇷 GOOOOL! 🇧🇷';
     document.getElementById('goal-text').style.color = 'var(--color-accent)';
   }
 
@@ -1063,8 +1063,12 @@ function endMatch() {
   if (scorePlayer === 7 && scoreBot === 1) {
     // 7:1 Legendary Win!
     showModal('gift-modal');
+    // Ensure first stage is active and others hidden
+    document.getElementById('gift-stage-ronaldo').classList.remove('hidden');
+    document.getElementById('gift-stage-suspense').classList.add('hidden');
+    document.getElementById('gift-stage-box').classList.add('hidden');
+    document.getElementById('gift-stage-reveal').classList.add('hidden');
     AudioCtrl.playUnlock();
-    spawnConfetti();
   } else {
     // Standard game over
     const titleEl = document.getElementById('game-over-title');
@@ -1091,10 +1095,15 @@ function hideModals() {
   document.querySelectorAll('.modal-overlay').forEach(el => {
     el.classList.remove('active');
   });
-  // Reset gift state
-  document.getElementById('gift-reveal-content').classList.add('hidden');
+  // Reset gift stages
+  document.getElementById('gift-stage-ronaldo').classList.remove('hidden');
+  document.getElementById('gift-stage-suspense').classList.add('hidden');
+  document.getElementById('gift-stage-box').classList.add('hidden');
+  document.getElementById('gift-stage-reveal').classList.add('hidden');
+  
+  const giftBox = document.getElementById('gift-box-trigger').querySelector('.gift-box');
+  giftBox.classList.remove('open');
   document.getElementById('gift-box-trigger').classList.remove('hidden');
-  document.getElementById('gift-box-trigger').querySelector('.gift-box').classList.remove('open');
 }
 
 function restartGame() {
@@ -1186,6 +1195,88 @@ document.getElementById('dev-score-btn').addEventListener('click', () => {
   ball.reset('player');
 });
 
+// Gift Stage Navigation and Suspense
+document.getElementById('ronaldo-next-btn').addEventListener('click', () => {
+  document.getElementById('gift-stage-ronaldo').classList.add('hidden');
+  const suspenseStage = document.getElementById('gift-stage-suspense');
+  suspenseStage.classList.remove('hidden');
+  
+  // Suspense audio sweep
+  let suspenseOsc = null;
+  let suspenseGain = null;
+  if (AudioCtrl.ctx) {
+    suspenseOsc = AudioCtrl.ctx.createOscillator();
+    suspenseGain = AudioCtrl.ctx.createGain();
+    
+    // Low pass filter to make it sound rumbling and suspenseful
+    const filter = AudioCtrl.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 300;
+
+    suspenseOsc.type = 'sawtooth';
+    suspenseOsc.frequency.setValueAtTime(100, AudioCtrl.ctx.currentTime);
+    suspenseGain.gain.setValueAtTime(0.015, AudioCtrl.ctx.currentTime);
+    
+    suspenseOsc.connect(filter);
+    filter.connect(suspenseGain);
+    suspenseGain.connect(AudioCtrl.ctx.destination);
+    suspenseOsc.start();
+  }
+
+  // Suspense Progress bar animation
+  const progressBar = document.getElementById('suspense-progress');
+  const statusText = document.getElementById('suspense-status-text');
+  let progress = 0;
+  
+  const statusMessages = [
+    { threshold: 0, text: "SUI-Spannung wird erzeugt... 🔋" },
+    { threshold: 15, text: "Ronaldo fängt an zu schwitzen... 🏃‍♂️" },
+    { threshold: 30, text: "Ronaldo macht 60 Liegestütze... 💪" },
+    { threshold: 50, text: "Bereite schiggimeggole Gutschein vor... 🎟️" },
+    { threshold: 70, text: "Lade Suzanna auf... 💖" },
+    { threshold: 85, text: "Poliere goldene Schriftzeichen... ✨" },
+    { threshold: 95, text: "Gutschein wird gedruckt... 🖨️" }
+  ];
+
+  const interval = setInterval(() => {
+    progress += 2;
+    if (progress > 100) progress = 100;
+    
+    progressBar.style.width = `${progress}%`;
+    
+    // Update synth frequency to rise as progress grows (creates suspense!)
+    if (suspenseOsc) {
+      suspenseOsc.frequency.setValueAtTime(100 + (progress * 3.5), AudioCtrl.ctx.currentTime);
+      suspenseGain.gain.setValueAtTime(0.015 + (progress * 0.0003), AudioCtrl.ctx.currentTime);
+    }
+
+    // Update status text
+    const activeMsg = [...statusMessages].reverse().find(m => progress >= m.threshold);
+    if (activeMsg) {
+      statusText.textContent = activeMsg.text;
+    }
+
+    if (progress >= 100) {
+      clearInterval(interval);
+      
+      // Stop suspense sound
+      if (suspenseOsc) {
+        suspenseGain.gain.exponentialRampToValueAtTime(0.0001, AudioCtrl.ctx.currentTime + 0.1);
+        setTimeout(() => {
+          suspenseOsc.stop();
+        }, 150);
+      }
+
+      // Transition to Box Stage
+      setTimeout(() => {
+        suspenseStage.classList.add('hidden');
+        document.getElementById('gift-stage-box').classList.remove('hidden');
+        AudioCtrl.playUnlock();
+      }, 500);
+    }
+  }, 50);
+});
+
 // Gift Opening Click Interaction
 document.getElementById('gift-box-trigger').addEventListener('click', () => {
   const giftBox = document.getElementById('gift-box-trigger').querySelector('.gift-box');
@@ -1195,12 +1286,11 @@ document.getElementById('gift-box-trigger').addEventListener('click', () => {
   AudioCtrl.playUnlock();
   
   setTimeout(() => {
-    document.getElementById('gift-box-trigger').classList.add('hidden');
-    const revealContent = document.getElementById('gift-reveal-content');
-    revealContent.classList.remove('hidden');
-    setTimeout(() => {
-      revealContent.classList.add('active');
-    }, 50);
+    document.getElementById('gift-stage-box').classList.add('hidden');
+    const revealStage = document.getElementById('gift-stage-reveal');
+    revealStage.classList.remove('hidden');
+    spawnConfetti();
+    AudioCtrl.playGoal();
   }, 1000);
 });
 

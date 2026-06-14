@@ -62,7 +62,7 @@
       
       <!-- Goal Indicator Overlay -->
       <div id="goal-overlay" class="goal-overlay">
-        <h2 id="goal-text">GOOOOAL!</h2>
+        <h2 id="goal-text">GOOOOL!</h2>
       </div>
 
       <!-- Controls Overlay for Mobile / Help -->
@@ -97,26 +97,54 @@
   <div id="gift-modal" class="modal-overlay">
     <div class="modal-content gift-box-content">
       <div class="gift-glow-effect"></div>
-      <h2>🎁 MYSTERY GIFT UNLOCKED! 🇩🇪</h2>
-      <p class="modal-desc">You successfully recreated the legendary 7:1 match!</p>
-      
-      <div class="gift-box-container" id="gift-box-trigger">
-        <div class="gift-box">
-          <div class="gift-lid"></div>
-          <div class="gift-ribbon"></div>
-          <div class="gift-body"></div>
+
+      <!-- Stage 1: Ronaldo Message -->
+      <div id="gift-stage-ronaldo" class="gift-stage">
+        <div class="ronaldo-badge">🐐</div>
+        <h2 class="ronaldo-title">Cristiano Ronaldo (60)</h2>
+        <p class="ronaldo-subtitle">Already getting warm for his game in 3 days says:</p>
+        <div class="ronaldo-quote">
+          "Sui, ich bin Stolz auf dich mein Junge."
         </div>
-        <p class="click-to-open">Tap to open the box...</p>
+        <button class="modal-btn primary ronaldo-btn" id="ronaldo-next-btn">SIUUUU! ⚡</button>
       </div>
 
-      <div class="gift-reveal hidden" id="gift-reveal-content">
+      <!-- Stage 2: Suspense Loading -->
+      <div id="gift-stage-suspense" class="gift-stage hidden">
+        <h2 class="suspense-title">ENTSCHLÜSSELE BELOHNUNG...</h2>
+        <p class="suspense-subtitle">Spannung wird erzeugt... Bitte warten...</p>
+        <div class="suspense-bar-container">
+          <div class="suspense-bar" id="suspense-progress"></div>
+        </div>
+        <div class="suspense-status" id="suspense-status-text">DECRYPTING SECURITY KEY...</div>
+      </div>
+
+      <!-- Stage 3: Gift Box (unopened) -->
+      <div id="gift-stage-box" class="gift-stage hidden">
+        <h2>🎁 DEIN PREIS WARTET</h2>
+        <p class="modal-desc">Klicke auf das Geschenk, um es zu öffnen!</p>
+        <div class="gift-box-container" id="gift-box-trigger">
+          <div class="gift-box">
+            <div class="gift-lid"></div>
+            <div class="gift-ribbon"></div>
+            <div class="gift-body"></div>
+          </div>
+          <p class="click-to-open">Tippe auf das Geschenk...</p>
+        </div>
+      </div>
+
+      <!-- Stage 4: Revealed Content -->
+      <div id="gift-stage-reveal" class="gift-stage hidden">
         <div class="mystery-item-card">
           <div class="item-particles"></div>
-          <h3 class="revealed-title">Golden Football Cup</h3>
-          <p class="revealed-desc">[TBA] - The ultimate developer trophy. It doesn't do anything yet, but it glows with pure pride! 🧪✨</p>
-          <div class="cup-icon">🏆</div>
+          <h3 class="revealed-title">🏆 GUTSCHEIN ERHALTEN 🏆</h3>
+          <div class="prize-display">
+            1x Gutschein für 1x schiggimeggole mit Suzanna
+          </div>
+          <p class="revealed-desc">Glückwunsch! Du hast die legendäre 7:1 Herausforderung gemeistert. Zeige diesen Gutschein bei Suzanna vor! 😉✨</p>
+          <div class="heart-icon">💖✨</div>
         </div>
-        <button class="modal-close-btn" id="close-gift-modal">Claim & Return to Menu</button>
+        <button class="modal-close-btn" id="close-gift-modal">Schließen & Menü</button>
       </div>
     </div>
   </div>
