@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FUßBAAAAAALL - The Ultimate 7:1 Challenge</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background elements -->
+  <div class="stadium-glow"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Screen 1: The Landing Page -->
+  <div id="landing-screen" class="screen active">
+    <div class="landing-content">
+      <div class="title-container">
+        <h1 class="pulsating-title" id="start-button">FUßBAAAAAALL</h1>
+      </div>
+      <p class="subtitle">Click to Enter the Arena</p>
+      <div class="info-badge">
+        <span>🏆 Challenge: Win 7:1 to Unlock the Mystery Gift</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: The Game Screen -->
+  <div id="game-screen" class="screen">
+    <!-- Scoreboard Header -->
+    <div class="scoreboard-container">
+      <div class="team player">
+        <div class="flag">🇩🇪</div>
+        <div class="team-info">
+          <span class="team-name">YOU</span>
+          <span class="keyboard-controls">A / D / W</span>
+        </div>
+        <span class="score" id="player-score">0</span>
+      </div>
+
+      <div class="vs-divider">
+        <span class="vs-text">VS</span>
+        <div class="match-timer" id="match-timer">00:00</div>
+      </div>
+
+      <div class="team bot">
+        <span class="score" id="bot-score">0</span>
+        <div class="team-info">
+          <span class="team-name">BOT</span>
+          <span class="bot-badge">AI v2.0</span>
+        </div>
+        <div class="flag">🇧🇷</div>
+      </div>
+    </div>
+
+    <!-- Game Canvas Wrapper -->
+    <div class="game-wrapper">
+      <canvas id="gameCanvas" width="1000" height="500"></canvas>
+      
+      <!-- Goal Indicator Overlay -->
+      <div id="goal-overlay" class="goal-overlay">
+        <h2 id="goal-text">GOOOOAL!</h2>
+      </div>
+
+      <!-- Controls Overlay for Mobile / Help -->
+      <div class="controls-overlay">
+        <div class="control-hint"><span class="key">A</span> / <span class="key">D</span> or <span class="key">←</span> / <span class="key">→</span> to Move</div>
+        <div class="control-hint"><span class="key">W</span> / <span class="key">Space</span> or <span class="key">↑</span> to Jump</div>
+      </div>
+    </div>
+
+    <!-- Game Settings / Controls Bar -->
+    <div class="game-footer">
+      <button class="footer-btn" id="restart-game-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+          <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+        </svg>
+        Restart Match
+      </button>
+      
+      <!-- Cheat tool to make it easier for testing/demoing the 7:1 if they want -->
+      <button class="footer-btn dev-btn" id="dev-score-btn" style="opacity: 0.3;">
+        ⚡ Set Score to 6:1 (Dev)
+      </button>
+
+      <button class="footer-btn" id="back-to-menu-btn">
+        Menu
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal: Mystery Gift Modal -->
+  <div id="gift-modal" class="modal-overlay">
+    <div class="modal-content gift-box-content">
+      <div class="gift-glow-effect"></div>
+      <h2>🎁 MYSTERY GIFT UNLOCKED! 🇩🇪</h2>
+      <p class="modal-desc">You successfully recreated the legendary 7:1 match!</p>
+      
+      <div class="gift-box-container" id="gift-box-trigger">
+        <div class="gift-box">
+          <div class="gift-lid"></div>
+          <div class="gift-ribbon"></div>
+          <div class="gift-body"></div>
+        </div>
+        <p class="click-to-open">Tap to open the box...</p>
+      </div>
+
+      <div class="gift-reveal hidden" id="gift-reveal-content">
+        <div class="mystery-item-card">
+          <div class="item-particles"></div>
+          <h3 class="revealed-title">Golden Football Cup</h3>
+          <p class="revealed-desc">[TBA] - The ultimate developer trophy. It doesn't do anything yet, but it glows with pure pride! 🧪✨</p>
+          <div class="cup-icon">🏆</div>
+        </div>
+        <button class="modal-close-btn" id="close-gift-modal">Claim & Return to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Game Over / Try Again Modal -->
+  <div id="game-over-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 id="game-over-title">MATCH FINISHED</h2>
+      <div class="final-score-display">
+        <span id="final-player-score">0</span> - <span id="final-bot-score">0</span>
+      </div>
+      <p id="game-over-desc" class="modal-desc">Nice try! But only a legendary 7:1 win unlocks the mystery gift.</p>
+      
+      <div class="modal-buttons">
+        <button class="modal-btn primary" id="modal-retry-btn">Play Again</button>
+        <button class="modal-btn secondary" id="modal-menu-btn">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Logic -->
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+create-repo.js
+node_modules/
+.vercel/
+*.png
+.git/
+*.webm
+*.log
+test-victory.ps1
+test-deploy.ps1
